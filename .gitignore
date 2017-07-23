@@ -1,0 +1,16 @@
+# Created by .ignore support plugin (hsz.mobi)
+/web.root/robots.txt
+/web.root/index.php
+/web.root/LICENSE.TXT
+web.root/concrete
+web.root/updates
+web.root/packages/cloneamental
+/web.root/application/
+!/web.root/application/src/
+!/web.root/application/bootstrap/app.php
+!/web.root/application/mvvm/
+!/web.root/application/assets/
+!/web.root/application/config/
+/web.root/application/config/doctrine/
+/web.root/application/config/generated_overrides/
+/web.root/application/config/database.php
