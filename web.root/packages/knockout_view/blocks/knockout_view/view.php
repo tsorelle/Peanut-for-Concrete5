@@ -10,8 +10,8 @@
     }
     else {
         echo "<div id='service-messages-container'><service-messages></service-messages></div>";
-        echo "<div id='$viewcontainerid'  style='display: none'>\n$content\n</div>";
-        // echo "<div>$content</div>";
+            // echo "<div id='$viewcontainerid'  style='display: none'>\n$content\n</div>";
+        echo "\n$content\n";
     }
 
     if ($addwrapper) {

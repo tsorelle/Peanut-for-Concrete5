@@ -41,21 +41,6 @@ class Controller extends BlockController
         return t("Knockout View");
     }
     
-    private function getPathSettings() {
-        $result = \Peanut\Bootstrap::getSettings();
-        /*
-        $iniPath = DIR_APPLICATION.'/config/settings.ini';
-        $settings = parse_ini_file($iniPath);
-        $result = new \stdClass();
-        $root = DIR_BASE . '/';
-        $result->peanutPath =  $root . (empty($settings['peanutRootPath']) ? 'pnut' : $settings['peanutRootPath']);
-        $result->mvvmPath =  $root . (empty($settings['mvvmPath']) ? 'application/mvvm' : $settings['mvvmPath']);
-        $result->corePath =  $root . (empty($settings['corePath']) ? 'pnut/core' : $settings['corePath']);
-        $result->modulePath =  $root . (empty($settings['modulePath']) ? 'packages' : $settings['modulePath']);
-        */
-        return $result;
-    }
-
     /**
      * Return structure parsed form $this->viewModel
      * $result->code  -  view model code name
@@ -100,11 +85,11 @@ class Controller extends BlockController
             return $result;
         }
 
-        $paths = $this->getPathSettings();
+        $pnutSettings = \Peanut\Bootstrap::getSettings();
         $vmcode = $this->viewmodel;
-        
+
         $parts = explode('/',$vmcode);
-        $defaultPath = $paths->mvvmPath;
+        $defaultPath = $pnutSettings->mvvmPath;
         
         if ($parts[0] == '') {
             // assume hard coded path if name starts with '/'
@@ -114,24 +99,24 @@ class Controller extends BlockController
         else {
             switch ($parts[0]) {
                 case '@pnut' :
-                    $pathRoot = $paths->peanutRootPath;
+                    $pathRoot = $pnutSettings->peanutRootPath;
                     array_shift($parts);
                     break;
                 case '@core' :
-                    $pathRoot = $paths->corePath;
+                    $pathRoot = $pnutSettings->corePath;
                     array_shift($parts);
                     break;
                 case '@app'  :
-                    $pathRoot = $paths->mvvmPath;
+                    $pathRoot = $pnutSettings->mvvmPath;
                     array_shift($parts);
                     break;
                 case  '@module' :
                     $subDir = array_shift($parts);
-                    $pathRoot = sprintf($paths->modulePath,$subDir);
+                    $pathRoot = sprintf($pnutSettings->modulePath,$subDir);
                     array_shift($parts);
                     break;
                 default:
-                    $pathRoot = $paths->mvvmPath;
+                    $pathRoot = $pnutSettings->mvvmPath;
                     break;
             }
 
@@ -184,7 +169,6 @@ class Controller extends BlockController
                 $this->requireAsset('javascript', 'jquery/ui');
 
                 if ($vmInfo->view != 'content') {
-                    $content = @file_get_contents($vmInfo->view);
                     $content = file_get_contents(DIR_BASE . '/' . $vmInfo->view);
                     if ($content === FALSE) {
                         $this->content = "<p>Warning: View file not found: $vmInfo->view </p>";
