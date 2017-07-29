@@ -1,0 +1,12 @@
+{
+  "name": "twoquakers/peanut-c5",
+  "description": "Peanut Framework Adapted for Concrete5",
+  "minimum-stability": "dev",
+  "license": "GPL-3.0+",
+  "authors": [
+    {
+      "name": "Terry SoRelle",
+      "email": "tls@2quakers.net"
+    }
+  ]
+}
