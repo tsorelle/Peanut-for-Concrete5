@@ -5,4 +5,6 @@
 web.root/concrete
 web.root/updates
 web.root/packages/cloneamental
-web.root/packages/bookstore
+/web.root/application/
+!/web.root/application/config/classes.ini
+!/web.root/application/bootstrap/app.php
