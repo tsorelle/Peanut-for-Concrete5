@@ -8,5 +8,15 @@
       "name": "Terry SoRelle",
       "email": "tls@2quakers.net"
     }
-  ]
+  ],
+  "autoload": {
+    "psr-4": {
+      "Tops\\": "web.root/packages/knockout_view/src/tops",
+      "Tops\\concrete5\\": "web.root/packages/knockout_view/src/concrete5",
+      "Peanut\\": "web.root/packages/knockout_view/src/peanut"
+    }
+  },
+  "require": {
+    "phpunit/phpunit": "6.1.3"
+  }
 }
