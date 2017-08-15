@@ -11,15 +11,6 @@ use Tops\concrete5\Concrete5PeanutInstaller;
 
 class InstallerTest extends TestCase
 {
-    public function testDbConfig() {
-        $helper = new Concrete5PeanutInstaller();
-        $config = $helper->getNativeDbConfiguration();
-        $this->assertNotEmpty($config);
-        $this->assertNotEmpty($config['user']);
-        $this->assertNotEmpty($config['pwd']);
-        $this->assertNotEmpty($config['database']);
-    }
-
     public function testGetInstallerInstance() {
         $actual = \Peanut\sys\PeanutInstaller::GetInstaller();
         $this->assertNotNull($actual);

@@ -16,6 +16,7 @@ class Concrete5PeanutInstaller extends PeanutInstaller
 
     public function getNativeDbConfiguration()
     {
+
         // TODO: Implement getNativeDbConfiguration() method.
         $result = $this->makeDbParameters('database','user','password');
         return $result;
