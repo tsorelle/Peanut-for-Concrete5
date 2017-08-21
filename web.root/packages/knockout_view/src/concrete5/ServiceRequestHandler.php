@@ -38,8 +38,9 @@
 namespace Tops\concrete5;
 
 use Concrete\Core\Controller\Controller;
+use Concrete\Core\Http\Request;
 
-
+use Peanut\sys\ViewModelPageBuilder;
 use Tops\services\ServiceFactory;
 
 class ServiceRequestHandler extends Controller
@@ -53,6 +54,13 @@ class ServiceRequestHandler extends Controller
 
     public function getSettings() {
         include(__DIR__."/../../../../application/config/settings.php");
+    }
+
+    public function buildPage()  {
+
+        $pageName = Request::getInstance()->get('vmname');
+        $content = ViewModelPageBuilder::Build($pageName);
+        print $content;
     }
 
 }

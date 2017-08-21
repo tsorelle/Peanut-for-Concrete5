@@ -21,4 +21,9 @@ class Concrete5PeanutInstaller extends PeanutInstaller
         $result = $this->makeDbParameters('database','user','password');
         return $result;
     }
+
+    public function doCustomSetup()
+    {
+        // TODO: Implement doCustomSetup() method.
+    }
 }

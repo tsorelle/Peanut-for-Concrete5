@@ -89,3 +89,8 @@ Route::register(
     '/peanut/service/execute/{sid}/{arg}',
     'Tops\concrete5\ServiceRequestHandler::executeService'
 );
+
+Route::register(
+    '/peanut/{vmname}',
+    'Tops\concrete5\ServiceRequestHandler::buildPage'
+);
