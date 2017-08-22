@@ -6,14 +6,18 @@
  * Time: 7:17 AM
  */
 
+// todo Complete and test user implementation
+
 namespace Tops\concrete5;
 
 
+use Concrete\Core\User\UserInfoRepository;
 use Tops\sys\IUser;
 use Tops\sys\TAbstractUser;
 use Tops\sys\TConfiguration;
 use Concrete\Core\User\User;
 use Concrete\Core\User\UserInfo;
+use Core;
 
 /**
  * Class TConcrete5User
@@ -34,6 +38,18 @@ class TConcrete5User extends TAbstractUser
      */
     private $userInfo;
 
+    /**
+     * @return UserInfoRepository
+     * @throws \Exception
+     */
+    private function getUserInfoRepository() {
+        $repo = Core::make(UserInfoRepository::class);
+        if (empty($repo)) {
+            throw new \Exception('Cannot create user info repository');
+        }
+        return $repo;
+    }
+
     private $memberGroups = false;
 
     private function getUserInfo() {
@@ -42,7 +58,8 @@ class TConcrete5User extends TAbstractUser
         }
         if (empty ($this->userInfo)) {
             $id = $this->user->getUserID();
-            $this->userInfo = UserInfo::getByID($id);
+            // $this->userInfo = UserInfo::getByID($id);
+            $this->userInfo = $this->getUserInfoRepository()->getByID($id);
         }
         return $this->userInfo;
     }
@@ -81,7 +98,8 @@ class TConcrete5User extends TAbstractUser
      */
     public function loadByUserName($userName)
     {
-        $this->userInfo = UserInfo::getByName($userName);
+        $this->userInfo = $this->getUserInfoRepository()->getByName($userName);
+        // $this->userInfo = Core::make('Concrete\Core\User\UserInfoRepository')->getByName($userName);
         $this->user = User::getByUserID($this->userInfo->getUserID());
     }
 
@@ -130,19 +148,13 @@ class TConcrete5User extends TAbstractUser
             return true;
         }
 
-        $permissions =TopsConfiguration::getValue($value,'permissions','');
-        if (trim($permissions) == 'authenticated'  && $this->user->isRegistered()) {
+        // treat group membership as a permission
+        if ($this->isMemberOf($value)) {
             return true;
         }
-        $permissionList = explode(',',$permissions);
-        if (!empty($permissionList)) {
-            $memberGroups = $this->getMemberGroups();
-            foreach ($permissionList as $group) {
-                if (in_array($group, $memberGroups)) {
-                    return true;
-                }
-            }
-        }
+        // todo: check custom permissions
+        // might need custom table for this
+        // see  https://documentation.concrete5.org/developers/permissions-access-security/creating-custom-permissions
         return false;
     }
 
