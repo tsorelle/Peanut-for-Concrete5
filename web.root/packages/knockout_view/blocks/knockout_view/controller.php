@@ -4,7 +4,7 @@ namespace Concrete\Package\KnockoutView\Block\KnockoutView;
 use \Tops\sys\TSession;
 use Concrete\Core\Block\BlockController;
 use Page;
-use Tops\ui\TViewModelManager;
+use Peanut\sys\ViewModelManager;
 
 class Controller extends BlockController
 {
@@ -152,7 +152,7 @@ class Controller extends BlockController
 
     public function view()
     {
-        $vmInfo = TViewModelManager::getViewModelSettings($this->viewmodel);
+        $vmInfo = ViewModelManager::getViewModelSettings($this->viewmodel);
         if (empty($vmInfo)) {
             $this->set('content',"<h2>Error: Cannot find view model configuration for '$this->viewmodel'</h2>");
             $this->set('viewcontainerid', '');
@@ -186,7 +186,7 @@ class Controller extends BlockController
 
             if (!$c->isEditMode()) {
                 $this->addFooterItem(
-                    TViewModelManager::GetStartScript());
+                    ViewModelManager::GetStartScript());
 
                 // init security token
                 TSession::Initialize();
