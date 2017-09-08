@@ -21,7 +21,8 @@ class MailerTest extends TestScript
         $msg->setSubject('Test message');
         $msg->setMessageBody('Hello world');
         $msg->setFromAddress('admin@foo.com', 'Administrator');
-
+        $msg->setReturnAddress('bounce@foo.com');
+        $msg->addAttachment('testfile');
 
         $mailer = new Concrete5Mailer();
         $this->assertNotNull($mailer, 'no mailer class');

@@ -85,7 +85,7 @@ class Concrete5Mailer implements IMailer
 
         $returnAddress = $message->getReturnAddress();
         if (!empty($returnAddress)) {
-            $mailService->setAdditionalHeaders(['Return-Path: '.$returnAddress]);
+            $mailService->setAdditionalHeaders(array('Return-Path' => $returnAddress));
         }
 
         $attachments = $message->getAttachments();
