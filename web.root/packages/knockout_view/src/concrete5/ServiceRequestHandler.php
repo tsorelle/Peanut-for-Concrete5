@@ -51,6 +51,19 @@ class ServiceRequestHandler extends Controller
         print json_encode($response);
     }
 
+    public function runtest($testname) {
+        print "<pre>";
+        print "Running $testname\n";
+        if (empty($testname)) {
+            exit("No test name!");
+        }
+        $testname = strtoupper(substr($testname,0,1)).substr($testname,1);
+        $className = "\\PeanutTest\\scripts\\$testname".'Test';
+        $test = new $className();
+        $test->run();
+        print "</pre>";
+        exit;
+    }
 
     public function getSettings() {
         include(__DIR__."/../../../../application/config/settings.php");

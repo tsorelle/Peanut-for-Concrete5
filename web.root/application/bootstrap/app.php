@@ -64,13 +64,23 @@
  * ----------------------------------------------------------------------------
  */
 
+use Peanut\sys\PeanutSettings;
+
 include_once (DIR_APPLICATION."/config/peanut-bootstrap.php");
 \Peanut\Bootstrap::initialize(DIR_BASE);
+
+
+$peanutUrl = PeanutSettings::GetPeanutUrl();
 
 
 Route::register(
     '/peanut/settings',
     'Tops\concrete5\ServiceRequestHandler::getSettings'
+);
+
+Route::register(
+    '/peanut/test/{testname}',
+    'Tops\concrete5\ServiceRequestHandler::runtest'
 );
 
 
@@ -91,6 +101,6 @@ Route::register(
 );
 
 Route::register(
-    '/peanut/{vmname}',
+    '/'.$peanutUrl.'/{vmname}',
     'Tops\concrete5\ServiceRequestHandler::buildPage'
 );

@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/web.root/packages/knockout_view/src/tops" isTestSource="false" packagePrefix="Tops" />
       <sourceFolder url="file://$MODULE_DIR$/web.root/packages/knockout_view/src/peanut" isTestSource="false" packagePrefix="Peanut" />
       <sourceFolder url="file://$MODULE_DIR$/web.root/packages/knockout_view/src/concrete5" isTestSource="false" packagePrefix="Tops\concrete5" />
+      <sourceFolder url="file://$MODULE_DIR$/web.root/packages/knockout_view/src/test" isTestSource="false" packagePrefix="PeanutTest" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
