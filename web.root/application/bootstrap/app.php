@@ -1,4 +1,6 @@
 <?php
+/* @var Concrete\Core\Application\Application $app */
+/* @var Concrete\Core\Console\Application $console only set in CLI environment */
 
 /*
  * ----------------------------------------------------------------------------
@@ -13,11 +15,11 @@
  *
  * ## Register a class override.
  *
- * Core::bind('helper/feed', function() {
+ * $app->bind('helper/feed', function() {
  * 	 return new \Application\Core\CustomFeedHelper();
  * });
  *
- * Core::bind('\Concrete\Attribute\Boolean\Controller', function($app, $params) {
+ * $app->bind('\Concrete\Attribute\Boolean\Controller', function($app, $params) {
  * 	return new \Application\Attribute\Boolean\Controller($params[0]);
  * });
  *
@@ -64,14 +66,11 @@
  * ----------------------------------------------------------------------------
  */
 
-use Peanut\sys\PeanutSettings;
-
+/** Peanut Installation (do not remove comment) **/
 include_once (DIR_APPLICATION."/config/peanut-bootstrap.php");
 \Peanut\Bootstrap::initialize(DIR_BASE);
 
-
-$peanutUrl = PeanutSettings::GetPeanutUrl();
-
+$peanutUrl = \Peanut\sys\PeanutSettings::GetPeanutUrl();
 
 Route::register(
     '/peanut/settings',
@@ -79,16 +78,9 @@ Route::register(
 );
 
 Route::register(
-    '/peanut/test/{testname}',
-    'Tops\concrete5\ServiceRequestHandler::runtest'
-);
-
-
-Route::register(
     '/peanut/service/execute',
     'Tops\concrete5\ServiceRequestHandler::executeService'
 );
-
 
 Route::register(
     '/peanut/service/execute/{sid}',
@@ -104,3 +96,5 @@ Route::register(
     '/'.$peanutUrl.'/{vmname}',
     'Tops\concrete5\ServiceRequestHandler::buildPage'
 );
+
+/** End Peanut Installation (do not remove comment) **/

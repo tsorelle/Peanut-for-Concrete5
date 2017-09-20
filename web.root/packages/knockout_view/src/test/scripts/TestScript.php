@@ -33,14 +33,12 @@ abstract class TestScript
          $this->assert($actual !== null,$item.'was null');
      }
 
-     protected function assertEquals($expected,$actual,$message = '') {
-         assert($expected == $actual,"Not equal: expected: $expected, actual:$actual");
-         if (!empty($message)) {
-             print "$message\n";
-         }
-     }
-
-
+    protected function assertEquals($expected,$actual,$message = '') {
+        if (!empty($message)) {
+            $message = ', message: '.$message;
+        }
+        $this->assert($expected == $actual,"Not equal: expected: $expected, actual:$actual $message");
+    }
 
     public function run() {
          try {

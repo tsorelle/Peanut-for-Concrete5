@@ -8,6 +8,8 @@ use BlockType;
 use SinglePage;
 use Route;
 use Database;
+use Tops\concrete5\Concrete5PeanutInstaller;
+use Tops\concrete5\Concrete5PeanutPackageInstaller;
 use Tops\sys\TConfiguration;
 
 class Controller extends Package
@@ -26,6 +28,15 @@ class Controller extends Package
         return t('Support for Knockout and Typescript');
     }
 
+    private $optimize;
+    private function getOptimizationSetting() {
+        if (!isset($this->optimize)) {
+            $this->optimize = false;
+            $iniFile = DIR_APPLICATION.'config/settings.ini';
+            $settings = @parse_ini_file($iniFile,true);
+            $this->optimize = $settings === false ? false : (!empty($settings['']['optimize']));
+        }
+    }
 
     public function on_start()
     {
@@ -44,7 +55,7 @@ class Controller extends Package
             array('local' => false,'minify' => false, 'position' =>  \Concrete\Core\Asset\Asset::ASSET_POSITION_HEADER)
         );
 
-        $optimize = TConfiguration::getValue('optimize','peanut',true);
+        $optimize = $this->getOptimizationSetting();
         $loaderScript = $optimize ?  'dist/loader.min.js' : 'core/PeanutLoader.js' ;
         $al->register(
             'javascript', 'peanut',
@@ -57,6 +68,9 @@ class Controller extends Package
 
     public function install()
     {
+        require_once (__DIR__.'/installation/bootstrap/Concrete5PeanutPackageInstaller.php');
+        Concrete5PeanutPackageInstaller::install();
+
         $pkg = parent::install();
         BlockType::installBlockType('knockout_view', $pkg);
         return $pkg;
@@ -66,6 +80,8 @@ class Controller extends Package
         parent::uninstall();
         $db = Database::connection();
         $db->executeQuery('DROP TABLE IF EXISTS btKnockoutView');
+        $installer = new Concrete5PeanutInstaller();
+        $installer->uninstallPeanut();
     }
 
 }

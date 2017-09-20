@@ -1,0 +1,36 @@
+include_once (DIR_APPLICATION."/config/peanut-bootstrap.php");
+\Peanut\Bootstrap::initialize(DIR_BASE);
+
+$peanutUrl = \Peanut\sys\PeanutSettings::GetPeanutUrl();
+
+Route::register(
+    '/peanut/settings',
+    'Tops\concrete5\ServiceRequestHandler::getSettings'
+);
+
+Route::register(
+    '/peanut/test/{testname}',
+    'Tops\concrete5\ServiceRequestHandler::runtest'
+);
+
+
+Route::register(
+    '/peanut/service/execute',
+    'Tops\concrete5\ServiceRequestHandler::executeService'
+);
+
+
+Route::register(
+    '/peanut/service/execute/{sid}',
+    'Tops\concrete5\ServiceRequestHandler::executeService'
+);
+
+Route::register(
+    '/peanut/service/execute/{sid}/{arg}',
+    'Tops\concrete5\ServiceRequestHandler::executeService'
+);
+
+Route::register(
+    '/'.$peanutUrl.'/{vmname}',
+    'Tops\concrete5\ServiceRequestHandler::buildPage'
+);
