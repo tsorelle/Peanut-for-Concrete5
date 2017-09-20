@@ -77,6 +77,14 @@ Route::register(
     'Tops\concrete5\ServiceRequestHandler::getSettings'
 );
 
+/** Development use only - begin **/
+Route::register(
+    '/peanut/test/{testname}',
+    'Tops\concrete5\ServiceRequestHandler::runtest'
+);
+/** Development use only - end **/
+
+
 Route::register(
     '/peanut/service/execute',
     'Tops\concrete5\ServiceRequestHandler::executeService'
