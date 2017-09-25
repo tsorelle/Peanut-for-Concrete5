@@ -125,4 +125,8 @@ class Concrete5PermissionsManager implements IPermissionsManager
         return $this->getRepository()->revokePermission($roleName,$permissionName);
     }
 
+    public function removePermission($name)
+    {
+        return $this->getRepository()->removePermission($name);
+    }
 }

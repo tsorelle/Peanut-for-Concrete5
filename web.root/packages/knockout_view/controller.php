@@ -68,9 +68,11 @@ class Controller extends Package
 
     public function install()
     {
-        require_once (__DIR__.'/installation/bootstrap/Concrete5PeanutPackageInstaller.php');
-        Concrete5PeanutPackageInstaller::install();
-
+        $installationIni = @parse_ini_file(__DIR__.'/installation/installation.ini');
+        if ($installationIni !== false && !empty($installationIni['enabled'])) {
+            require_once (__DIR__.'/installation/bootstrap/Concrete5PeanutPackageInstaller.php');
+            Concrete5PeanutPackageInstaller::install();
+        }
         $pkg = parent::install();
         BlockType::installBlockType('knockout_view', $pkg);
         return $pkg;
@@ -80,8 +82,11 @@ class Controller extends Package
         parent::uninstall();
         $db = Database::connection();
         $db->executeQuery('DROP TABLE IF EXISTS btKnockoutView');
-        $installer = new Concrete5PeanutInstaller();
-        $installer->uninstallPeanut();
-    }
 
+        $installationIni = @parse_ini_file(__DIR__.'/installation/installation.ini');
+        if ($installationIni !== false && (!empty($installationIni['enabled'])) && class_exists('\Tops\concrete5\Concrete5PeanutInstaller')) {
+            $installer = new \Tops\concrete5\Concrete5PeanutInstaller();
+            $installer->uninstallAll();
+        }
+    }
 }

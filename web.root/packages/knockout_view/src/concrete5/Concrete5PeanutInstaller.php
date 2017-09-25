@@ -17,7 +17,7 @@ class Concrete5PeanutInstaller extends PeanutInstaller
     const bootstrapStartMarker='/** Peanut Installation (do not remove comment) **/';
     const bootstrapEndMarker='/** End Peanut Installation (do not remove comment) **/';
 
-    public function doCustomSetup()
+    public function doCustomSetup($testing = false)
     {
         $packagePath = PeanutSettings::GetModulePath();
         $bootstrapPath = TPath::fromFileRoot('application/bootstrap');
@@ -46,7 +46,7 @@ class Concrete5PeanutInstaller extends PeanutInstaller
         @file_put_contents($appFile, $output);
     }
 
-    public function uninstallPeanut()
+    public function doTeardown($testing = false)
     {
         $bootstrapPath = TPath::fromFileRoot('application/bootstrap');
         $appFile = "$bootstrapPath/app.php";
@@ -70,7 +70,5 @@ class Concrete5PeanutInstaller extends PeanutInstaller
         if ($changed) {
             file_put_contents($appFile,implode("\n",$output));
         }
-
-        parent::uninstallPeanut();
     }
 }

@@ -86,11 +86,9 @@ class Concrete5PeanutPackageInstaller
         $instance->installFiles();
         $installer = new Concrete5PeanutInstaller();
         $installer->installPackage('peanut');
+        $installer->installPackage('permissions');
+        $installer->installPackage('mailboxes');
     }
 
-    public static function uninstall() {
-        $installer = new Concrete5PeanutInstaller();
-        $installer->uninstallPeanut();
-    }
 
 }
