@@ -11,13 +11,16 @@
 namespace Tops\concrete5;
 
 
-use Concrete\Core\User\UserInfoRepository;
-use Tops\sys\IUser;
-use Tops\sys\TAbstractUser;
-use Tops\sys\TConfiguration;
+use Core;
 use Concrete\Core\User\User;
 use Concrete\Core\User\UserInfo;
-use Core;
+use Concrete\Core\Attribute\Category\CategoryService;
+use Concrete\Core\Attribute\Key\UserKey;
+use Concrete\Core\User\UserInfoRepository;
+use Tops\sys\TAbstractUser;
+use Tops\sys\TConfiguration;
+use Tops\sys\TStrings;
+use Tops\sys\TUser;
 
 /**
  * Class TConcrete5User
@@ -38,6 +41,69 @@ class TConcrete5User extends TAbstractUser
      */
     private $userInfo;
 
+    private $memberGroups;
+
+    private static $userController;
+
+    private static function getUserController() {
+        if (!isset(self::$userController)) {
+            /**
+             * @var $service CategoryService;
+             */
+            $service = \Core::make(CategoryService::class);
+            self::$userController = $service->getByHandle('user')->getController();
+        }
+        return self::$userController;
+    }
+
+
+
+    public static function getAttributeList() {
+        return
+            [
+                TUser::profileKeyFirstName =>
+                    [
+                        'akHandle' =>  TConfiguration::getValue(TUser::profileKeyFirstName,'user-attributes','first_name'),
+                        'akName' => 'First name',
+                        'akIsSearchable' => true,
+                        'akIsSearchableIndex' => true,
+                    ],
+                TUser::profileKeyLastName  =>
+                    [
+                        'akHandle' => TConfiguration::getValue(TUser::profileKeyLastName,'user-attributes','last_name'),
+                        'akName' => 'Last name',
+                        'akIsSearchable' => true,
+                        'akIsSearchableIndex' => true,
+                    ],
+                TUser::profileKeyFullName  =>
+                    [
+                        'akHandle' => TConfiguration::getValue(TUser::profileKeyFirstName,'user-attributes','full_name'),
+                        'akName' => 'Full name',
+                        'akIsSearchable' => true,
+                        'akIsSearchableIndex' => true,
+                    ],
+                TUser::profileKeyShortName  =>
+                    [
+                        'akHandle' => TConfiguration::getValue(TUser::profileKeyShortName,'user-attributes','short_name'),
+                        'akName' => 'Short name',
+                        'akIsSearchable' => true,
+                        'akIsSearchableIndex' => true,
+                    ]
+            ];
+    }
+
+    public static function CreateAttributeKeys($pkg = false) {
+        $list = self::getAttributeList();
+        $controller = self::getUserController();
+        $type='text';
+        foreach  ($list as $key => $args ) {
+            $handle = $args['akHandle'];
+            if (UserKey::getByHandle($handle) === null) {
+                $controller->add($type, $args, $pkg);
+            }
+        }
+    }
+
     /**
      * @return UserInfoRepository
      * @throws \Exception
@@ -50,37 +116,31 @@ class TConcrete5User extends TAbstractUser
         return $repo;
     }
 
-    private $memberGroups = false;
 
-    private function getUserInfo() {
-        if (empty($this->user)) {
+    private function setUser($user,$userInfo=null)
+    {
+        unset($this->isCurrentUser);
+        if ($user == null) {
+            $this->userInfo = null;
+            $this->id = 0;
+            unset($this->userName);
             return false;
         }
-        if (empty ($this->userInfo)) {
-            $id = $this->user->getUserID();
-            // $this->userInfo = UserInfo::getByID($id);
-            $this->userInfo = $this->getUserInfoRepository()->getByID($id);
-        }
-        return $this->userInfo;
-    }
-
-    private function setUser($user) {
         $this->user = $user;
-        $this->userInfo = null;
-        $this->memberGroups = false;
+        $this->id = $this->user->getUserID();
+        if ($userInfo === null) {
+            $this->userInfo = $this->getUserInfoRepository()->getByID($this->id);
+        }
+        else {
+            $this->userInfo = $userInfo;
+        }
+        $this->userName = $this->user->getUserName();
+        unset($this->memberGroups);
+        return true;
     }
 
     private function getMemberGroups()
     {
-        if ($this->memberGroups === false) {
-            $this->memberGroups = array();
-            $groups = $this->user->getUserGroups();
-            foreach($groups as $groupID => $groupName) {
-                $group = \Concrete\Core\User\Group\Group::getByID($groupID);
-                $this->memberGroups[] = strtolower($group->getGroupName());
-            }
-        }
-        return $this->memberGroups;
     }
 
     /**
@@ -89,7 +149,7 @@ class TConcrete5User extends TAbstractUser
      */
     public function loadById($id)
     {
-        $this->setUser(User::getByUserID($id));
+        return $this->setUser(User::getByUserID($id));
     }
 
     /**
@@ -98,9 +158,31 @@ class TConcrete5User extends TAbstractUser
      */
     public function loadByUserName($userName)
     {
-        $this->userInfo = $this->getUserInfoRepository()->getByName($userName);
-        // $this->userInfo = Core::make('Concrete\Core\User\UserInfoRepository')->getByName($userName);
-        $this->user = User::getByUserID($this->userInfo->getUserID());
+        $userInfo = $this->getUserInfoRepository()->getByName($userName);
+        return $this->loadFromUserInfo($userInfo);
+
+    }
+    /**
+     * @param $email
+     * @return mixed
+     */
+    public function loadByEmail($email)
+    {
+        $userInfo = $this->getUserInfoRepository()->getByEmail($email);
+        return $this->loadFromUserInfo($userInfo);
+    }
+
+
+
+    /**
+     * @param $userInfo UserInfo
+     * @return bool
+     */
+    private function loadFromUserInfo($userInfo) {
+        if ($userInfo == null) {
+            return $this->setUser(null);
+        }
+        return $this->setUser(User::getByUserID($userInfo->getUserID()),$userInfo);
     }
 
     /**
@@ -108,7 +190,18 @@ class TConcrete5User extends TAbstractUser
      */
     public function loadCurrentUser()
     {
-        $this->setUser(new User());
+        $result = $this->setUser(new User());
+        $this->isCurrentUser = true;
+        return $result;
+    }
+
+    public function isCurrent()
+    {
+        if (!isset($this->isCurrentUser)) {
+            $current = new User();
+            $this->isCurrentUser = ($this->id === $current->getUserID());
+        }
+        return $this->isCurrentUser;
     }
 
     /**
@@ -117,8 +210,8 @@ class TConcrete5User extends TAbstractUser
      */
     public function isMemberOf($roleName)
     {
-        $groups = $this->getMemberGroups();
-        $roleName = strtolower($roleName);
+        $groups = $this->getRoles();
+        $roleName = TStrings::convertNameFormat($roleName,Concrete5PermissionsManager::$groupNameFormat);
         return in_array($roleName,$groups);
     }
 
@@ -144,72 +237,16 @@ class TConcrete5User extends TAbstractUser
      */
     public function isAuthorized($value = '')
     {
-        if ($this->user->isSuperUser()) {
+        if ($this->isAdmin()) {
             return true;
         }
 
-        // treat group membership as a permission
-        if ($this->isMemberOf($value)) {
-            return true;
+        $value = TStrings::convertNameFormat($value,Concrete5PermissionsManager::$permissionKeyFormat);
+        $pk = $pk = \Concrete\Core\Permission\Key\Key::getByHandle($value);
+        if ($pk !== null) {
+            return $pk->validate();
         }
-        // todo: check custom permissions
-        // might need custom table for this
-        // see  https://documentation.concrete5.org/developers/permissions-access-security/creating-custom-permissions
         return false;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFirstName()
-    {
-        // TODO: Implement getFirstName() method.
-    }
-
-    /**
-     * @return string
-     */
-    public function getLastName()
-    {
-        // TODO: Implement getLastName() method.
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserName()
-    {
-        // TODO: Implement getUserName() method.
-    }
-
-    /**
-     * @param bool $defaultToUsername
-     * @return string
-     */
-    public function getFullName($defaultToUsername = true)
-    {
-        // TODO: Implement getFullName() method.
-    }
-
-    /**
-     * @param bool $defaultToUsername
-     * @return string
-     */
-    public function getUserShortName($defaultToUsername = true)
-    {
-        // TODO: Implement getUserShortName() method.
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail()
-    {
-        $info = $this->getUserInfo();
-        if (empty($info)) {
-            return '';
-        }
-        return $info->getUserEmail();
     }
 
     /**
@@ -220,27 +257,48 @@ class TConcrete5User extends TAbstractUser
         return $this->user->isSuperUser();
     }
 
-    /**
-     * @return bool
-     */
-    public function isCurrent()
+    protected function loadProfile()
     {
-        return $this->user->isRegistered();
+        $this->profile = [];
+        if (!empty($this->userInfo)) {
+            $attributes = self::getAttributeList();
+            foreach ($attributes as $key => $args) {
+                $handle = $args['akHandle'];
+                $value = $this->userInfo->getAttribute($handle);
+                if ($value !==null) {
+                    $this->profile[$key] = $value;
+                }
+            }
+            $this->profile[TUser::profileKeyEmail] = $this->userInfo->getUserEmail();
+        }
     }
+
+
+
 
     public function getProfileValue($key)
     {
-        // TODO: Implement getProfileValue() method.
+        $result = parent::getProfileValue($key);
+        if ($result !== false) {
+            return $result;
+        }
+        return empty($result) ? '' : $result;
     }
 
     public function setProfileValue($key, $value)
     {
-        // TODO: Implement setProfileValue() method.
+        if (isset($this->userInfo)) {
+            $list = self::getAttributeList();
+            if (!empty($list[$key])) {
+                $handle = $list[$key]['akHandle'];
+                $this->userInfo->setAttribute($key,$value);
+            }
+        }
     }
 
     protected function test()
     {
-        // TODO: Implement test() method.
+        return 'concrete5';
     }
 
     /**
@@ -248,21 +306,24 @@ class TConcrete5User extends TAbstractUser
      */
     public function getRoles()
     {
-        // TODO: Implement getRoles() method.
+        if (!isset($this->memberGroups)) {
+            $this->memberGroups = array();
+            $groups = $this->user->getUserGroups();
+            foreach($groups as $groupID => $groupName) {
+                $group = \Concrete\Core\User\Group\Group::getByID($groupID);
+                $this->memberGroups[] = $group->getGroupName();
+            }
+        }
+        return $this->memberGroups;
     }
 
-    protected function loadProfile()
-    {
-        // TODO: Implement loadProfile() method.
+    public function getC5User() {
+        return $this->user;
     }
 
-    /**
-     * @param $email
-     * @return mixed
-     */
-    public function loadByEmail($email)
-    {
-        // TODO: Implement loadByEmail() method.
-        throw new \Exception("Method 'loadByEmail' not implemented");
+    public function getC5UserInfo() {
+        return $this->userInfo;
     }
+
+
 }

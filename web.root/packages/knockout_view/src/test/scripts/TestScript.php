@@ -19,26 +19,29 @@ abstract class TestScript
          $this->assertions++;
          if ($proposition) {
              $this->passed++;
-             return;
+             return true;
          }
          $this->failed++;
          print "Assertion failed, $message\n";
+         return false;
      }
 
      protected function assertNotEmpty($actual,$item) {
-         $this->assert(!empty($actual),$item.'was empty');
+         return $this->assert(!empty($actual),$item.' was empty');
      }
 
      protected function assertNotNull($actual,$item) {
-         $this->assert($actual !== null,$item.'was null');
+         return $this->assert($actual !== null,$item.' was null');
      }
 
-    protected function assertEquals($expected,$actual,$message = '') {
-        if (!empty($message)) {
-            $message = ', message: '.$message;
-        }
-        $this->assert($expected == $actual,"Not equal: expected: $expected, actual:$actual $message");
-    }
+     protected function assertEquals($expected,$actual,$message = '') {
+         if (!empty($message)) {
+             $message = ', message: '.$message;
+         }
+         return $this->assert($expected == $actual,"Not equal: expected: $expected, actual:$actual $message");
+     }
+
+
 
     public function run() {
          try {
