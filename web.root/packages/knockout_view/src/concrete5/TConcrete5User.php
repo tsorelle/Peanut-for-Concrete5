@@ -258,7 +258,7 @@ class TConcrete5User extends TAbstractUser
     {
         $result = parent::getProfileValue($key);
         if ($result === false) {
-            $key = self::formatC5AttributeKey($key);
+            $key = TUser::getProfileFieldKey($key);
             $result = $this->userInfo->getAttribute($key);
         }
         return empty($result) ? '' : $result;
