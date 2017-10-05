@@ -62,33 +62,24 @@ class TConcrete5User extends TAbstractUser
     public static function getAttributeList() {
         return
             [
-                /*
-                TUser::profileKeyFirstName =>
+                 TUser::profileKeyFullName  =>
                     [
-                        'akHandle' =>  TConfiguration::getValue(TUser::profileKeyFirstName,'user-attributes','first_name'),
-                        'akName' => 'First name',
-                        'akIsSearchable' => true,
-                        'akIsSearchableIndex' => true,
-                    ],
-                TUser::profileKeyLastName  =>
-                    [
-                        'akHandle' => TConfiguration::getValue(TUser::profileKeyLastName,'user-attributes','last_name'),
-                        'akName' => 'Last name',
-                        'akIsSearchable' => true,
-                        'akIsSearchableIndex' => true,
-                    ],
-                */
-                TUser::profileKeyFullName  =>
-                    [
-                        'akHandle' => TUser::getProfileFieldKey(TUser::profileKeyFullName),
+                        'akHandle' => self::formatC5AttributeKey(TUser::profileKeyFullName),
                         'akName' => 'Full name',
                         'akIsSearchable' => true,
                         'akIsSearchableIndex' => true,
                     ],
                 TUser::profileKeyShortName  =>
                     [
-                        'akHandle' => TUser::getProfileFieldKey(TUser::profileKeyShortName),
+                        'akHandle' => self::formatC5AttributeKey(TUser::profileKeyFullName),
                         'akName' => 'Short name',
+                        'akIsSearchable' => true,
+                        'akIsSearchableIndex' => true,
+                    ],
+                TUser::profileKeyDisplayName  =>
+                    [
+                        'akHandle' => self::formatC5AttributeKey(TUser::profileKeyDisplayName),
+                        'akName' => 'Display name',
                         'akIsSearchable' => true,
                         'akIsSearchableIndex' => true,
                     ]
@@ -259,26 +250,16 @@ class TConcrete5User extends TAbstractUser
     protected function loadProfile()
     {
         if (!empty($this->userInfo)) {
-            $attributes = self::getAttributeList();
-            foreach ($attributes as $key => $args) {
-                $handle = $args['akHandle'];
-                $value = $this->userInfo->getAttribute($handle);
-                if ($value !==null) {
-                    $this->profile[$key] = $value;
-                }
-            }
             $this->profile[TUser::profileKeyEmail] = $this->userInfo->getUserEmail();
         }
     }
 
-
-
-
     public function getProfileValue($key)
     {
         $result = parent::getProfileValue($key);
-        if ($result !== false) {
-            return $result;
+        if ($result === false) {
+            $key = self::formatC5AttributeKey($key);
+            $result = $this->userInfo->getAttribute($key);
         }
         return empty($result) ? '' : $result;
     }
@@ -316,6 +297,10 @@ class TConcrete5User extends TAbstractUser
 
     public function getC5UserInfo() {
         return $this->userInfo;
+    }
+
+    private static function formatC5AttributeKey($key) {
+        return TStrings::convertNameFormat($key,TStrings::keyFormat);
     }
 
 
