@@ -17,6 +17,8 @@ use Concrete\Core\User\UserInfo;
 use Concrete\Core\Attribute\Category\CategoryService;
 use Concrete\Core\Attribute\Key\UserKey;
 use Concrete\Core\User\UserInfoRepository;
+use Tops\cache\ITopsCache;
+use Tops\cache\TSessionCache;
 use Tops\sys\TAbstractUser;
 use Tops\sys\TConfiguration;
 use Tops\sys\TStrings;
@@ -45,6 +47,7 @@ class TConcrete5User extends TAbstractUser
 
     private static $userController;
 
+
     private static function getUserController() {
         if (!isset(self::$userController)) {
             /**
@@ -56,11 +59,10 @@ class TConcrete5User extends TAbstractUser
         return self::$userController;
     }
 
-
-
     public static function getAttributeList() {
         return
             [
+                /*
                 TUser::profileKeyFirstName =>
                     [
                         'akHandle' =>  TConfiguration::getValue(TUser::profileKeyFirstName,'user-attributes','first_name'),
@@ -75,16 +77,17 @@ class TConcrete5User extends TAbstractUser
                         'akIsSearchable' => true,
                         'akIsSearchableIndex' => true,
                     ],
+                */
                 TUser::profileKeyFullName  =>
                     [
-                        'akHandle' => TConfiguration::getValue(TUser::profileKeyFirstName,'user-attributes','full_name'),
+                        'akHandle' => TUser::getProfileFieldKey(TUser::profileKeyFullName),
                         'akName' => 'Full name',
                         'akIsSearchable' => true,
                         'akIsSearchableIndex' => true,
                     ],
                 TUser::profileKeyShortName  =>
                     [
-                        'akHandle' => TConfiguration::getValue(TUser::profileKeyShortName,'user-attributes','short_name'),
+                        'akHandle' => TUser::getProfileFieldKey(TUser::profileKeyShortName),
                         'akName' => 'Short name',
                         'akIsSearchable' => true,
                         'akIsSearchableIndex' => true,
@@ -137,10 +140,6 @@ class TConcrete5User extends TAbstractUser
         $this->userName = $this->user->getUserName();
         unset($this->memberGroups);
         return true;
-    }
-
-    private function getMemberGroups()
-    {
     }
 
     /**
@@ -259,7 +258,6 @@ class TConcrete5User extends TAbstractUser
 
     protected function loadProfile()
     {
-        $this->profile = [];
         if (!empty($this->userInfo)) {
             $attributes = self::getAttributeList();
             foreach ($attributes as $key => $args) {
@@ -296,12 +294,7 @@ class TConcrete5User extends TAbstractUser
         }
     }
 
-    protected function test()
-    {
-        return 'concrete5';
-    }
-
-    /**
+        /**
      * @return string[]
      */
     public function getRoles()

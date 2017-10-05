@@ -16,8 +16,8 @@ class Permissions1Test extends TestScript
 {
     // log in as admin
 
-    const TestPermissionName = 'User can test peanut 4';
-    const TestRoleName = 'Permissions test role 4';
+    const TestPermissionName = 'User can test peanut 5';
+    const TestRoleName = 'Permissions test role 5';
     public function execute()
     {
         $user = TUser::getCurrent();

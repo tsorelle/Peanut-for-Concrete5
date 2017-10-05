@@ -117,6 +117,11 @@ class Concrete5PermissionsManager implements IPermissionsManager
     public function assignPermission($roleName, $permissionName)
     {
         $key = TStrings::convertNameFormat($permissionName,self::$permissionKeyFormat);
+        /*
+        $roleName = TStrings::convertNameFormat($roleName,self::$groupNameFormat);
+        return $this->assignPermissionGroup($key,$roleName);
+        */
+
         $repository = $this->getRepository();
         $repository->assignPermission($roleName,$key);
         $permission = $repository->getPermission($permissionName);
@@ -125,6 +130,64 @@ class Concrete5PermissionsManager implements IPermissionsManager
         }
         $roles = $permission->getRoles();
         $this->assignPermissionGroups($key,$roles);
+        return true;
+
+    }
+
+    /**
+     * @param $permissionKey  string handle for permission
+     * @param $roleName  string handle for group
+     * @param bool $delete  delete if true, add if false, default false
+     * @return bool  false if action would duplicate an assignment or remove a non-existant one
+     * @deprecated Not working right yet
+     */
+    private function assignPermissionGroup( $permissionKey, $roleName,$delete=false)
+    {
+        $group = Group::getByName($roleName);
+        if (empty($group)) {
+                return false;
+        }
+
+        /**
+         * @var $pkObject \Concrete\Core\Permission\Key\Key
+         */
+        $pkObject = \Concrete\Core\Permission\Key\Key::getByHandle($permissionKey);
+
+        /**
+         * @var $permissionAssignment \Concrete\Core\Permission\Assignment\Assignment
+         */
+        $permissionAssignment = $pkObject->getPermissionAssignmentObject();
+
+        // Error!! $accessId assigned null;
+        $accessId = $pkObject->getPermissionAccessID();
+
+        /**
+         * @var $paGlobal PermissionAccess
+         *
+         * Warning, $paGlobal must be duplicated per the statement below. Any other methods applied will affect all Task permissions.
+         */
+        $paGlobal = PermissionAccess::getByID($accessId, $pkObject);
+
+        /**
+         * @var $permissionAccess PermissionAccess
+         */
+        $permissionAccess = $paGlobal->duplicate();
+
+        /**
+         * @var $groupEntity GroupPermissionAccessEntity
+         */
+        $groupEntity = GroupPermissionAccessEntity::getOrCreate($group);
+        if ($groupEntity === null) {
+            return false;
+        }
+
+        if ($delete) {
+            $permissionAccess->removeListItem($groupEntity);
+        } else {
+            $permissionAccess->addListItem($groupEntity);
+        }
+
+        $permissionAssignment->assignPermissionAccess($permissionAccess);
         return true;
     }
 
@@ -164,9 +227,10 @@ class Concrete5PermissionsManager implements IPermissionsManager
 
     public function addPermission($name, $description)
     {
-        $username = TUser::getCurrent()->getUserName();
+
         $permission = $this->getRepository()->getPermission($name);
         if ($permission === false) {
+            $username = TUser::getCurrent()->getUserName();
             $this->getRepository()->addPermission($name, $description, $username);
             $this->createPermission($name);
         }
@@ -181,7 +245,14 @@ class Concrete5PermissionsManager implements IPermissionsManager
      */
     public function revokePermission($roleName, $permissionName)
     {
-        $key = strtolower(str_replace(' ','_',$permissionName));
+        $key = TStrings::convertNameFormat($permissionName,self::$permissionKeyFormat);
+        /*
+                $delete = true;
+                $roleName = TStrings::convertNameFormat($roleName,self::$groupNameFormat);
+                return $this->assignPermissionGroup($key,$roleName, $delete);
+        */
+
+
         $this->getRepository()->revokePermission($roleName,$key);
         $permission = $this->getRepository()->getPermission($permissionName);
         $roles = $permission->getRoles();
