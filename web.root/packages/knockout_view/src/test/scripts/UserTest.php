@@ -28,7 +28,7 @@ class UserTest extends TestScript
         $actual = $user->getFullName();
         $this->assertNotNull($actual,'full name');
         print "Full name: $actual\n";
-        $actual = $user->getUserShortName();
+        $actual = $user->getShortName();
         $this->assertNotNull($actual,'short name');
         print "Short name: $actual\n";
         $actual = $user->getEmail();
