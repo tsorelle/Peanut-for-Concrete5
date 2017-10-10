@@ -19,8 +19,10 @@ use Concrete\Core\Attribute\Key\UserKey;
 use Concrete\Core\User\UserInfoRepository;
 use Tops\cache\ITopsCache;
 use Tops\cache\TSessionCache;
+use Tops\db\model\repository\PermissionsRepository;
 use Tops\sys\TAbstractUser;
 use Tops\sys\TConfiguration;
+use Tops\sys\TPermission;
 use Tops\sys\TStrings;
 use Tops\sys\TUser;
 
@@ -32,6 +34,33 @@ use Tops\sys\TUser;
  */
 class TConcrete5User extends TAbstractUser
 {
+    /**
+     * @var PermissionsRepository
+     */
+    private $permissionsRepository;
+
+    /**
+     * @return PermissionsRepository
+     */
+    private function getRepository()
+    {
+        if (!isset($this->permissionsRepository)) {
+            $this->permissionsRepository = new PermissionsRepository();
+        }
+        return $this->permissionsRepository;
+    }
+
+
+    /**
+     * @param $permissionName
+     * @return bool|TPermission
+     */
+    public function getPermission($permissionName)
+    {
+        return $this->getRepository()->getPermission($permissionName);
+    }
+
+
 
     /**
      * @var $user User
@@ -218,25 +247,41 @@ class TConcrete5User extends TAbstractUser
      */
     public function isAuthenticated()
     {
-        return $this->user->isRegistered();
+        return $this->user->checkLogin();
     }
 
     /**
      * @param string $value
      * @return bool
+     *
+     * Use datasbase permission manager until C5 assignPermission is fixed.
      */
     public function isAuthorized($value = '')
     {
-        if ($this->isAdmin()) {
-            return true;
-        }
+        $authorized = parent::isAuthorized($value);
+        if (!$authorized) {
+//            if ($this->isCurrentUser) {
+//                // Concrete 5 only supports permission check for current user.
+//                $value = TStrings::convertNameFormat($value, Concrete5PermissionsManager::$permissionKeyFormat);
+//                $pk = $pk = \Concrete\Core\Permission\Key\Key::getByHandle($value);
+//                if ($pk !== null) {
+//                    $authorized = $pk->validate();
+//                }
+//            }
+//            else {
+                $permission = $this->getRepository()->getPermission($value);
+                if (!empty($permission)) {
+                    $roles = $this->getRoles();
+                    foreach ($roles as $roleName) {
+                        if ($permission->check($roleName)){
+                            return true;
+                        }
+                    }
+                }
+            }
 
-        $value = TStrings::convertNameFormat($value,Concrete5PermissionsManager::$permissionKeyFormat);
-        $pk = $pk = \Concrete\Core\Permission\Key\Key::getByHandle($value);
-        if ($pk !== null) {
-            return $pk->validate();
-        }
-        return false;
+//        }
+        return $authorized;
     }
 
     /**
@@ -287,6 +332,9 @@ class TConcrete5User extends TAbstractUser
                 $group = \Concrete\Core\User\Group\Group::getByID($groupID);
                 $this->memberGroups[] = $group->getGroupName();
             }
+        }
+        if ($this->isAuthenticated()) {
+            $this->memberGroups[] = TUser::AuthenticatedRole;
         }
         return $this->memberGroups;
     }

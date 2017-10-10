@@ -10,6 +10,7 @@ namespace PeanutTest\scripts;
 
 
 use Tops\concrete5\Concrete5PermissionsManager;
+use Tops\sys\IPermissionsManager;
 use Tops\sys\TStrings;
 use Tops\sys\TUser;
 
@@ -29,9 +30,9 @@ class UsersetupTest extends TestScript
                 return false;
             }
         }
-        $value = TStrings::convertNameFormat($value,TStrings::keyFormat);
+        $value = TStrings::convertNameFormat($value,IPermissionsManager::roleKeyFormat);
         foreach ($this->roles as $role) {
-            if ($role->Value === $value) {
+            if ($role->Key === $value) {
                 return true;
             }
         }
@@ -79,8 +80,21 @@ class UsersetupTest extends TestScript
         $roleCount = $this->removeRole($testRole,$roleCount);
         $roleCount = $this->addRole(TUser::appAdminRoleName,$roleCount);
         $roleCount = $this->addRole(TUser::mailAdminRoleName,$roleCount);
+        $roleCount = $this->addRole(TUser::directoryAdminRoleName,$roleCount);
+
+        $this->manager->addPermission(TUser::mailAdminPermissionName);
+        $this->manager->addPermission(TUser::appAdminPermissionName);
+        $this->manager->addPermission(TUser::directoryAdminPermissionName);
+        $this->manager->addPermission(TUser::viewDirectoryPermissionName);
+        $this->manager->addPermission(TUser::updateDirectoryPermissionName);
+
         $this->manager->assignPermission(TUser::mailAdminRoleName,TUser::mailAdminPermissionName);
-        $this->manager->assignPermission(TUser::appAdminPermissionName,TUser::mailAdminPermissionName);
+        $this->manager->assignPermission(TUser::appAdminRoleName,TUser::mailAdminPermissionName);
+        $this->manager->assignPermission(TUser::appAdminRoleName,TUser::appAdminPermissionName);
+        $this->manager->assignPermission(TUser::AuthenticatedRole,TUser::viewDirectoryPermissionName);
+        $this->manager->assignPermission(TUser::mailAdminRoleName,TUser::updateDirectoryPermissionName);
+        $this->manager->assignPermission(TUser::appAdminRoleName,TUser::directoryAdminPermissionName);
+        $this->manager->assignPermission(TUser::directoryAdminRoleName,TUser::directoryAdminPermissionName);
 
         print "\n".($this->continueTest ? 'Ready for "user" test. Add your test user to the mail admin role' : 'Setup failed')."\n";
 

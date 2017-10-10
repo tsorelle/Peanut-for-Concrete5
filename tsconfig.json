@@ -2,12 +2,12 @@
   "compilerOptions": {
     "removeComments": true,
     "preserveConstEnums": true,
-    "inlineSourceMap": true
+    "sourceMap": true
   },
   "include"  : [
-    "web.root/modules/pnut/core/**/*",
-    "web.root/modules/pnut/components/**/*",
-    "web.root/modules/pnut/packages/**/*",
+    "web.root/packages/knockout_view/pnut/core/**/*",
+    "web.root/packages/knockout_view/pnut/components/**/*",
+    "web.root/packages/knockout_view/pnut/packages/**/*",
     "web.root/application/mvvm/vm/**/*",
     "web.root/application/mvvm/components/**/*"
   ]
