@@ -67,6 +67,11 @@ class UserTest extends TestScript
         print "Is current user? ".($actual ? 'Yes' : 'No')."\n";
         $this->assert($actual,'not current');
 
+        $actual = $user->getDisplayName();
+        $this->assertNotNull($actual,'display name');
+        print "Display name: $actual\n";
+
+
         $canView = $user->isAuthorized(TUser::viewDirectoryPermissionName);
         print "User ".($canView? 'can' : 'CANNOT')." view directory \n";
 

@@ -211,14 +211,37 @@ class TConcrete5User extends TAbstractUser
     {
         $result = $this->setUser(new User());
         $this->isCurrentUser = true;
+        $this->currentUserIsAnonymous = !$this->isAuthenticated();
         return $result;
     }
 
+    protected function getDefaultUserName()
+    {
+        $result = parent::getDefaultUserName();
+        if ($result == TUser::anonymousDisplayName  && (!$this->isCurrent()) && $this->currentUserIsAnonymous()) {
+            // concrete 5 denies access to user attributes if current user is anonymous
+            return $this->getUserName();
+        }
+        return $result;
+    }
+
+    private $currentUserIsAnonymous;
+    private function currentUserIsAnonymous() {
+        if (!isset($this->currentUserIsAnonymous)) {
+            $current = new User();
+            $this->currentUserIsAnonymous = !$current->checkLogin();
+        }
+        return $this->currentUserIsAnonymous;
+    }
+    
     public function isCurrent()
     {
         if (!isset($this->isCurrentUser)) {
             $current = new User();
             $this->isCurrentUser = ($this->id === $current->getUserID());
+            if (!isset($this->currentUserIsAnonymous)) {
+                $this->currentUserIsAnonymous = !$current->checkLogin();
+            }
         }
         return $this->isCurrentUser;
     }
@@ -320,7 +343,7 @@ class TConcrete5User extends TAbstractUser
         }
     }
 
-        /**
+     /**
      * @return string[]
      */
     public function getRoles()

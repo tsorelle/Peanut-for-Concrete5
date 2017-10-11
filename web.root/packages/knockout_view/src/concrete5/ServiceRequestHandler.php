@@ -61,7 +61,9 @@ class ServiceRequestHandler extends Controller
         $className = "\\PeanutTest\\scripts\\$testname".'Test';
         $test = new $className();
         $test->run();
-        print "</pre>";
+
+        print "\n</pre>";
+        print "<a href='/' target='_blank'>Home</a>";
         exit;
     }
 
