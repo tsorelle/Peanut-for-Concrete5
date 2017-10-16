@@ -17,19 +17,14 @@ class RolesTest extends TestScript
 
     public function execute()
     {
-        $manager = new Concrete5PermissionsManager();
         $list = new GroupList();;
         $list->includeAllGroups();
-        $collection = $list->getResults();
         foreach ($list->getResults() as $group) {
-             var_dump($group);
-             print "\n";
-            /*
-            if (strpos(strtolower($group->gName),'test role') !== false) {
-                $manager->removeRole($group->gName);
-                print "Deleting role $group->gName\n";
-            }
-            */
+            print $group->gName."\n";
+            //var_dump($group);
+            print "\n";
         }
+        $manager = new Concrete5PermissionsManager();
+        print_r($manager->getRoles());
     }
 }

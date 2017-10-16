@@ -6,8 +6,6 @@
  * Time: 7:17 AM
  */
 
-// todo Complete and test user implementation
-
 namespace Tops\concrete5;
 
 
@@ -17,12 +15,10 @@ use Concrete\Core\User\UserInfo;
 use Concrete\Core\Attribute\Category\CategoryService;
 use Concrete\Core\Attribute\Key\UserKey;
 use Concrete\Core\User\UserInfoRepository;
-use Tops\cache\ITopsCache;
-use Tops\cache\TSessionCache;
 use Tops\db\model\repository\PermissionsRepository;
 use Tops\sys\TAbstractUser;
-use Tops\sys\TConfiguration;
 use Tops\sys\TPermission;
+use Tops\sys\TPermissionsManager;
 use Tops\sys\TStrings;
 use Tops\sys\TUser;
 
@@ -252,9 +248,13 @@ class TConcrete5User extends TAbstractUser
      */
     public function isMemberOf($roleName)
     {
-        $groups = $this->getRoles();
-        $roleName = TStrings::convertNameFormat($roleName,Concrete5PermissionsManager::$groupNameFormat);
-        return in_array($roleName,$groups);
+        $result = parent::isMemberOf($roleName);
+        if (!$result) {
+            $groups = $this->getRoles();
+            $roleName = $this->formatRoleHandle($roleName);
+            return in_array($roleName,$groups);
+        }
+        return $result;
     }
 
     /**
@@ -279,33 +279,45 @@ class TConcrete5User extends TAbstractUser
      *
      * Use datasbase permission manager until C5 assignPermission is fixed.
      */
-    public function isAuthorized($value = '')
+    public function isAuthorized($permissionName = '')
     {
-        $authorized = parent::isAuthorized($value);
+        $authorized = parent::isAuthorized($permissionName);
         if (!$authorized) {
-//            if ($this->isCurrentUser) {
-//                // Concrete 5 only supports permission check for current user.
-//                $value = TStrings::convertNameFormat($value, Concrete5PermissionsManager::$permissionKeyFormat);
-//                $pk = $pk = \Concrete\Core\Permission\Key\Key::getByHandle($value);
-//                if ($pk !== null) {
-//                    $authorized = $pk->validate();
-//                }
-//            }
-//            else {
-                $permission = $this->getRepository()->getPermission($value);
-                if (!empty($permission)) {
-                    $roles = $this->getRoles();
-                    foreach ($roles as $roleName) {
-                        if ($permission->check($roleName)){
-                            return true;
-                        }
-                    }
-                }
+            $authorized = $this->checkDbPermission($permissionName);
+            if ((!$authorized) && $this->isCurrentUser) {
+                // Concrete 5 only supports permission check for current user.
+                $authorized = $this->checkC5Permission($permissionName);
             }
-
-//        }
+        }
         return $authorized;
     }
+
+    private function checkC5Permission($permissionName)
+    {
+        $handle =  $this->formatPermissionHandle($permissionName);
+        $pk = \Concrete\Core\Permission\Key\Key::getByHandle($handle);
+        if ($pk !== null) {
+            return $pk->validate();
+        }
+        return false;
+    }
+
+    private function checkDbPermission($permissionName) {
+        $permissionName =  $this->formatKey($permissionName);
+        $manager = TPermissionsManager::getPermissionManager();
+        $permission = $manager->getPermission($permissionName);
+        if (empty($permission)) {
+            return false;
+        }
+        $roles = $this->getRoles();
+        foreach ($roles as $role) {
+            if ($permission->check($role)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * @return bool
@@ -349,17 +361,28 @@ class TConcrete5User extends TAbstractUser
     public function getRoles()
     {
         if (!isset($this->memberGroups)) {
-            $this->memberGroups = array();
-            $groups = $this->user->getUserGroups();
-            foreach($groups as $groupID => $groupName) {
-                $group = \Concrete\Core\User\Group\Group::getByID($groupID);
-                $this->memberGroups[] = $group->getGroupName();
+            $this->memberGroups = $this->getActualRoleNames();
+            if ($this->isAuthenticated()) {
+                $manager = TPermissionsManager::getPermissionManager();
+                $this->memberGroups[] = $manager->getAuthenticatedRole();
             }
         }
-        if ($this->isAuthenticated()) {
-            $this->memberGroups[] = TUser::AuthenticatedRole;
-        }
         return $this->memberGroups;
+    }
+
+    public function getActualRoleNames()
+    {
+        $result = [];
+        $groups = $this->user->getUserGroups();
+        foreach ($groups as $groupID => $groupName) {
+            $group = \Concrete\Core\User\Group\Group::getByID($groupID);
+            $result[] = $group->getGroupName();
+        }
+        return $result;
+    }
+
+    public function getUserGroupNames() {
+        return $this->getRoles();
     }
 
     public function getC5User() {

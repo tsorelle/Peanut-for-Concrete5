@@ -12,7 +12,7 @@ namespace Tops\concrete5;
 use \Concrete\Core\User\Group\Group;
 use Concrete\Core\User\Group\GroupList;
 use Tops\db\model\repository\PermissionsRepository;
-use Tops\sys\IPermissionsManager;
+use Tops\sys\TPermissionsManager;
 use Tops\sys\TPermission;
 use Tops\sys\TStrings;
 use Tops\sys\TUser;
@@ -20,7 +20,7 @@ use \Concrete\Core\Permission\Access\Entity\GroupEntity as GroupPermissionAccess
 use \Concrete\Core\Permission\Access\Access as PermissionAccess;
 
 
-class Concrete5PermissionsManagerExperimental implements IPermissionsManager
+class Concrete5PermissionsManagerExperimental extends TPermissionsManager
 {
     public static $groupNameFormat = TStrings::wordCapsFormat;
     public static $permissionHandleFormat = TStrings::keyFormat;
@@ -74,9 +74,9 @@ class Concrete5PermissionsManagerExperimental implements IPermissionsManager
             $item = new \stdClass();
             $groupName = $group->getGroupName();
             $displayName = $group->getGroupDisplayName();
-            $item->Key = TStrings::ConvertNameFormat($groupName, IPermissionsManager::roleKeyFormat);
-            $item->Name = TStrings::ConvertNameFormat($groupName, IPermissionsManager::roleNameFormat);
-            $item->Description = TStrings::ConvertNameFormat($displayName, IPermissionsManager::roleDescriptionFormat);
+            $item->Key = TStrings::ConvertNameFormat($groupName, TPermissionsManager::roleKeyFormat);
+            $item->Name = TStrings::ConvertNameFormat($groupName, TPermissionsManager::roleNameFormat);
+            $item->Description = TStrings::ConvertNameFormat($displayName, TPermissionsManager::roleDescriptionFormat);
             $result[] = $item;
         }
         return $result;
