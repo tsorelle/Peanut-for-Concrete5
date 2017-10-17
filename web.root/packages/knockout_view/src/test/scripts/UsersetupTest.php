@@ -11,9 +11,7 @@ namespace PeanutTest\scripts;
 
 use Tops\concrete5\Concrete5PermissionsManager;
 use Tops\sys\TPermissionsManager;
-use Tops\sys\TPermissionsManager;
 use Tops\sys\TStrings;
-use Tops\sys\TUser;
 
 class UsersetupTest extends TestScript
 {
@@ -31,7 +29,7 @@ class UsersetupTest extends TestScript
                 return false;
             }
         }
-        $value = TStrings::convertNameFormat($value,TPermissionsManager::roleKeyFormat);
+        $value = TStrings::convertNameFormat($value,TPermissionsManager::keyFormat);
         foreach ($this->roles as $role) {
             if ($role->Key === $value) {
                 return true;
