@@ -155,6 +155,7 @@ class TConcrete5User extends TAbstractUser
         }
         $this->userName = $this->user->getUserName();
         unset($this->memberGroups);
+        $this->updateLanguage();
         return true;
     }
 
