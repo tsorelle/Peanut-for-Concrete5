@@ -216,7 +216,7 @@ class Concrete5PermissionsManagerExperimental extends TPermissionsManager
     }
 
 
-    public function addPermission($name, $description)
+    public function addPermission($name, $description=null)
     {
 
         $permission = $this->getRepository()->getPermission($name);

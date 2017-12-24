@@ -399,4 +399,15 @@ class TConcrete5User extends TAbstractUser
     }
 
 
+    public function signIn($username, $password = null)
+    {
+        $userInfo =  \Core::make('Concrete\Core\User\UserInfoRepository')->getByName($username);
+        if (empty($userInfo)) {
+            return false;
+        }
+        $user = $userInfo->getUserObject();
+        $userId = $user->getUserID();
+        $result = User::loginByUserID($userId);
+        return (!empty($result));
+    }
 }
