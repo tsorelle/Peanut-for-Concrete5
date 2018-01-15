@@ -10,6 +10,8 @@ namespace PeanutTest\scripts;
 
 
 use Tops\sys\TUser;
+use Concrete\Core\User\User;
+
 
 class UserloginTest extends TestScript
 {
@@ -17,6 +19,9 @@ class UserloginTest extends TestScript
     public function execute()
     {
         $username = 'ScriptMaster';
+
+        $current = TUser::getCurrent();
+        $isAdmin = $current->isAdmin();
 
         if (TUser::getCurrent()->isAuthenticated()) {
             exit('Log out before running test');
@@ -35,8 +40,15 @@ class UserloginTest extends TestScript
 
         $actual = TUser::SignIn($username,'M6tJb@1*yoIf97cFCQlDFmwJ');
         $this->assert($actual,'Not logged in');
-        $actual = TUser::getCurrent()->getUserName();
+        $current = TUser::getCurrent();
+        $c5user = new User();
+        $actual = $c5user->uID;
+        $expected = $current->getId();
+        $this->assertEquals($expected,$actual,'Current user mismatch');
+        $actual = $current->getUserName();
         $this->assertEquals($username,$actual,'Wrong user is current');
+        $actual = $current->isAdmin();
+        $this->assert($actual,'Not admin');
 
     }
 }

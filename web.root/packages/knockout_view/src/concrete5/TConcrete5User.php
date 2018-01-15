@@ -251,11 +251,15 @@ class TConcrete5User extends TAbstractUser
     {
         $result = parent::isMemberOf($roleName);
         if (!$result) {
-            $groups = $this->getRoles();
-            $roleName = $this->formatRoleHandle($roleName);
-            return in_array($roleName,$groups);
+            return $this->isInGroup($roleName);
         }
         return $result;
+    }
+
+    private function isInGroup($roleName) {
+        $groups = $this->getRoles();
+        $roleName = $this->formatRoleHandle($roleName);
+        return in_array($roleName,$groups);
     }
 
     /**
@@ -325,7 +329,7 @@ class TConcrete5User extends TAbstractUser
      */
     public function isAdmin()
     {
-        return $this->user->isSuperUser();
+        return ($this->user->isSuperUser() || $this->isInGroup('Administrators'));
     }
 
     protected function loadProfile()

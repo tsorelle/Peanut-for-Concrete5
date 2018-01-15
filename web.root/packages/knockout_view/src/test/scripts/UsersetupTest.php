@@ -86,6 +86,8 @@ class UsersetupTest extends TestScript
         $this->manager->addPermission(TPermissionsManager::directoryAdminPermissionName);
         $this->manager->addPermission(TPermissionsManager::viewDirectoryPermissionName);
         $this->manager->addPermission(TPermissionsManager::updateDirectoryPermissionName);
+        $this->manager->addPermission(TPermissionsManager::editContentPermissionsName);
+        $this->manager->addPermission(TPermissionsManager::sendMailingsPermissionName);
 
         $this->manager->assignPermission(TPermissionsManager::mailAdminRoleName,TPermissionsManager::mailAdminPermissionName);
         $this->manager->assignPermission(TPermissionsManager::appAdminRoleName,TPermissionsManager::mailAdminPermissionName);
@@ -94,6 +96,8 @@ class UsersetupTest extends TestScript
         $this->manager->assignPermission(TPermissionsManager::mailAdminRoleName,TPermissionsManager::updateDirectoryPermissionName);
         $this->manager->assignPermission(TPermissionsManager::appAdminRoleName,TPermissionsManager::directoryAdminPermissionName);
         $this->manager->assignPermission(TPermissionsManager::directoryAdminRoleName,TPermissionsManager::directoryAdminPermissionName);
+        $this->manager->assignPermission(TPermissionsManager::appAdminRoleName,TPermissionsManager::editContentPermissionsName);
+        $this->manager->assignPermission(TPermissionsManager::mailAdminRoleName,TPermissionsManager::editContentPermissionsName);
 
         print "\n".($this->continueTest ? 'Ready for "user" test. Add your test user to the mail admin role' : 'Setup failed')."\n";
 
