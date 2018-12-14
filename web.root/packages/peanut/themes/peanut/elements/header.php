@@ -25,5 +25,12 @@ $displayThirdColumn = $blocks > 0 || $c->isEditMode();
                 <div class="col-sm-3 col-xs-12"><?php  $as->display(); ?></div>
             <?php  } ?>
         </div>
+        <!-- div class="row">
+            <div class="col-sm-12">
+                <div id='service-messages-container' class="col-md-12">
+                    <service-messages></service-messages>
+                </div>
+            </div>
+        </div -->
     </div>
 </header>

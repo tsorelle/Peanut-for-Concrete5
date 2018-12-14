@@ -2,7 +2,7 @@
 namespace Concrete\Package\Peanut\Theme\Peanut;
 
 use Concrete\Core\Area\Layout\Preset\Provider\ThemeProviderInterface;
-
+// modified for peanut. Terry SoRelle - 2018-12-13
 class PageTheme extends \Concrete\Core\Page\Theme\Theme implements ThemeProviderInterface
 {
     public function registerAssets()

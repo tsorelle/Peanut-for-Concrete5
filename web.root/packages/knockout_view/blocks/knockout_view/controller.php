@@ -185,8 +185,7 @@ class Controller extends BlockController
             $this->set('addwrapper', $this->addwrapper);
 
             if (!$c->isEditMode()) {
-                $this->addFooterItem(
-                    ViewModelManager::GetStartScript());
+                // $this->addFooterItem(ViewModelManager::GetStartScript());
 
                 // init security token
                 TSession::Initialize();

@@ -4,6 +4,7 @@ namespace Concrete\Package\Peanut;
 use Concrete\Core\Asset\AssetList;
 use Package;
 use PageTheme;
+use Peanut\sys\ViewModelManager;
 
 class Controller extends Package
 {
@@ -34,8 +35,6 @@ class Controller extends Package
             $this
         );
     }
-
-
 
 	public function install()
 	{

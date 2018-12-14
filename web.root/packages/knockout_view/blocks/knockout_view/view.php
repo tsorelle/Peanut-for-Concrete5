@@ -9,7 +9,7 @@
         echo '<div style="border: 1px double black; padding: 50px"><b>Knockout View disabled in edit mode.</b></div>';
     }
     else {
-        echo "<div id='service-messages-container'><service-messages></service-messages></div>";
+        // echo "<div id='service-messages-container'><service-messages></service-messages></div>";
             // echo "<div id='$viewcontainerid'  style='display: none'>\n$content\n</div>";
         echo "\n$content\n";
     }

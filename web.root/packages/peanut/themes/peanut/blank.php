@@ -6,6 +6,7 @@ $this->inc('elements/header_top.php'); ?>
 <?php 
 $a = new Area('Main');
 $a->enableGridContainer();
+print '<div class="row"><div class="col-sm-12"><div id="service-messages-container" class="col-md-12"><service-messages></service-messages></div></div></div>';
 $a->display($c);
 ?>
 </main>

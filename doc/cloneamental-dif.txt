@@ -1,0 +1,22 @@
+packages/peanut/controller
+	controller.php
+		Bootstrap modals loaded in on_start()
+		names and versions change
+packages/peanut/themes/peanut
+	page_theme.php
+		Require bootstrap assets:
+		$this->requireAsset('javascript','bootstrap/collapse');
+        $this->requireAsset('javascript', 'bootstrap/tooltip');
+        $this->requireAsset('javascript','bootstrap/modals');
+			// registered in /packages/aftm/controller.php
+		Update theme name in getThemeName() and getThemeDescription()
+    default.php
+        Added service-messages tag
+packages/peanut/themes/peanut/elements
+    footer.php
+        Added startup script
+packages/peanut/themes/peanut/css
+	main.less
+		append bootstrap modals import:
+			@import "build/bootstrap-3.2.0/modals.less";
+

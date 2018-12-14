@@ -37,4 +37,21 @@ class ServiceRequestInputHandler extends \Tops\services\ServiceRequestInputHandl
         return Request::getInstance()->get(\Tops\services\ServiceRequestInputHandler::securityTokenKey);
     }
 
+    public function getValues($exclude = [])
+    {
+        $result = new \stdClass();
+        foreach ($_POST as $key => $value) {
+            if (!array_key_exists($key,$exclude)) {
+                $result->$key = $value;
+            }
+        }
+        foreach ($_GET as $key => $value) {
+            if (!array_key_exists($key,$exclude)) {
+                if (empty($result->$key)) {
+                    $result->$key = $value;
+                }
+            }
+        }
+        return $result;
+    }
 }

@@ -1,4 +1,8 @@
-<?php  defined('C5_EXECUTE') or die("Access Denied.");
+<?php
+// Modified to include peanut generated startup script. Terry SoRelle - 2018-12-13
+use Peanut\sys\ViewModelManager;
+
+defined('C5_EXECUTE') or die("Access Denied.");
 
 $footerSiteTitle = new GlobalArea('Footer Site Title');
 $footerSocial = new GlobalArea('Footer Social');
@@ -68,5 +72,12 @@ $displayFirstSection = $footerSiteTitleBlocks > 0 || $footerSocialBlocks > 0 || 
     </div>
 </footer>
 
+<?php
+// $this->addFooterItem(ViewModelManager::GetStartScript());
+?>
 
-<?php  $this->inc('elements/footer_bottom.php');?>
+<?php
+    $this->inc('elements/footer_bottom.php');
+    print ViewModelManager::GetStartScript();
+?>
+
