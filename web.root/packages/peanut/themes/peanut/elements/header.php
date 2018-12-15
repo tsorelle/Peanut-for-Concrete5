@@ -7,6 +7,7 @@ $displayThirdColumn = $blocks > 0 || $c->isEditMode();
 ?>
 
 <header>
+
     <div class="container">
         <div class="row">
             <div class="col-sm-4 col-xs-6">

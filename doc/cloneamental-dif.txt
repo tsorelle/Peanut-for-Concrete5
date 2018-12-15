@@ -13,6 +13,8 @@ packages/peanut/themes/peanut
     default.php
         Added service-messages tag
 packages/peanut/themes/peanut/elements
+    header_top.php
+        Added Peanut service-messages component
     footer.php
         Added startup script
 packages/peanut/themes/peanut/css
