@@ -7,9 +7,3 @@ web.root/updates
 web.root/packages/cloneamental
 web.root/packages/knockout_view/installation/ini
 web.root/packages/knockout_view/installation/application.zip
-web.root/application/config
-!/web.root/application/config/settings.ini
-!/web.root/application/config/classes.ini
-!/web.root/application/config/viewmodels.ini
-web.root/application
-!/web.root/application/bootstrap/app.php
