@@ -14,6 +14,7 @@ use Tops\sys\TConfiguration;
 
 class Controller extends Package
 {
+    protected $pkgAutoloaderMapCoreExtensions = true; // do not automap src files. Leave it to Peanut
     protected $pkgHandle = 'knockout_view';
     protected $appVersionRequired = '5.8.0';
     protected $pkgVersion = '1.1';
