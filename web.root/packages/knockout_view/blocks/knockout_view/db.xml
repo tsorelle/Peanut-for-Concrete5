@@ -8,9 +8,10 @@
       <unsigned/>
       <key/>
     </field>
-    <field name="content" type="text"/>
     <field name="viewmodel" type="string" size="255"/>
+    <field name="inputvalue" type="string" size="255"/>
     <field name="addwrapper" type="boolean" />
+    <field name="content" type="text"/>
   </table>
 
 </schema>

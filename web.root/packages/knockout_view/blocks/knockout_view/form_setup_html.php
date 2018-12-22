@@ -7,6 +7,12 @@
     </label>
 </div>
 
+<div id="ccm-block-knockout-value-inputvalue">
+    <label for="ccm-block-knockout-value-inputvalue-input">Input value
+    <input id="ccm-block-knockout-value-inputvalue-input" class="form-control" value="<?php  echo $inputvalue ?>" name="inputvalue" />
+    </label>
+</div>
+
 <div class="checkbox" id="ccm-block-knockout-value-addwrapper">
     <label for="ccm-block-knockout-value-addwrapper-input">
         <input type="checkbox" id="ccm-block-knockout-value-addwrapper-input" value="1" name="addwrapper"

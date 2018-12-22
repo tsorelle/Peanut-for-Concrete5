@@ -27,9 +27,10 @@ class Controller extends BlockController
     protected $btIgnorePageThemeGridFrameworkContainer = true;
 
 
-    public $content = "";
     public $viewmodel = '';
+    public $inputvalue = '';
     public $addwrapper = '';
+    public $content = '';
 
     public function getBlockTypeDescription()
     {
@@ -152,10 +153,11 @@ class Controller extends BlockController
 
     public function view()
     {
-        $vmInfo = ViewModelManager::getViewModelSettings($this->viewmodel);
+        $vmInfo = ViewModelManager::getViewModelSettings($this->viewmodel,$this->bID);
         if (empty($vmInfo)) {
             $this->set('content',"<h2>Error: Cannot find view model configuration for '$this->viewmodel'</h2>");
             $this->set('viewcontainerid', '');
+            $this->set('inputvalue', '');
             $this->set('addwrapper', false);
         } else {
             $c = Page::getCurrentPage();
@@ -183,6 +185,7 @@ class Controller extends BlockController
             $this->set('content', $this->content);
             $this->set('viewcontainerid', $containerId);
             $this->set('addwrapper', $this->addwrapper);
+            $this->set('inputvalue', $this->inputvalue);
 
             if (!$c->isEditMode()) {
                 // $this->addFooterItem(ViewModelManager::GetStartScript());
@@ -214,6 +217,7 @@ class Controller extends BlockController
         $content = isset($data['content']) ? $data['content'] : '';
         $args['content'] = isset($data['content']) ? $data['content'] : '';
         $args['viewmodel'] = isset($data['viewmodel']) ? $data['viewmodel'] : '';
+        $args['inputvalue'] = isset($data['inputvalue']) ? $data['inputvalue'] : '';
         $args['addwrapper'] = isset($data['addwrapper']) ? $data['addwrapper'] : 0;
         parent::save($args);
     }

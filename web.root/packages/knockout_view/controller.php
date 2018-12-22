@@ -82,17 +82,18 @@ class Controller extends Package
         return $pkg;
     }
 
-    public function uninstall() {
+    public function uninstall()
+    {
         parent::uninstall();
         $db = Database::connection();
         $db->executeQuery('DROP TABLE IF EXISTS btKnockoutView');
         // todo: get package installer working - deferred
         /*
-        $installationIni = @parse_ini_file(__DIR__.'/installation/installation.ini');
-        if ($installationIni !== false && (!empty($installationIni['enabled'])) && class_exists('\Tops\concrete5\Concrete5PeanutInstaller')) {
-            $installer = new \Tops\concrete5\Concrete5PeanutInstaller();
-            $installer->uninstallAll();
-        }
+                $installationIni = @parse_ini_file(__DIR__.'/installation/installation.ini');
+                if ($installationIni !== false && (!empty($installationIni['enabled'])) && class_exists('\Tops\concrete5\Concrete5PeanutInstaller')) {
+                    $installer = new \Tops\concrete5\Concrete5PeanutInstaller();
+                    $installer->uninstallAll();
+                }
             */
     }
 }
