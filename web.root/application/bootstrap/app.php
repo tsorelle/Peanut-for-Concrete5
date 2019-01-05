@@ -105,4 +105,12 @@ Route::register(
     'Tops\concrete5\ServiceRequestHandler::buildPage'
 );
 
+
+Route::register(
+    '/peanut/service/download',
+    'Tops\concrete5\ServiceRequestHandler::getDownload'
+);
+
+
+
 /** End Peanut Installation (do not remove comment) **/
